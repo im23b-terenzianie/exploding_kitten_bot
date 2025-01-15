@@ -59,6 +59,7 @@ class Henning(Bot):
             skip_cards = [card for card in self.hand if card.card_type == CardType.SKIP]
             if skip_cards:
                 return skip_cards[0]
+        return None
 
     def calculate_exploding_kitten_probability(self, state: GameState) -> float:
         # Calculate the probability of drawing an Exploding Kitten
