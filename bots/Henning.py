@@ -11,6 +11,9 @@ class Henning(Bot):
         # Get the number of alive bots
         alive_bots = state.alive_bots
 
+        # Track the probability of drawing an Exploding Kitten
+        exploding_kitten_probability = self.calculate_exploding_kitten_probability(state)
+
         # Defensive strategy when more bots are alive
         if alive_bots > 2:
             # Prioritize SEE THE FUTURE
@@ -18,10 +21,11 @@ class Henning(Bot):
             if see_the_future_cards:
                 return see_the_future_cards[0]
 
-            # Second priority is to play SKIP
-            skip_cards = [card for card in self.hand if card.card_type == CardType.SKIP]
-            if skip_cards:
-                return random.choice(skip_cards)
+            # Second priority is to play SKIP if the probability of drawing an Exploding Kitten is high
+            if exploding_kitten_probability > 0.3:
+                skip_cards = [card for card in self.hand if card.card_type == CardType.SKIP]
+                if skip_cards:
+                    return random.choice(skip_cards)
 
         # Aggressive strategy when fewer bots are alive
         else:
@@ -55,3 +59,9 @@ class Henning(Bot):
             skip_cards = [card for card in self.hand if card.card_type == CardType.SKIP]
             if skip_cards:
                 return skip_cards[0]
+
+    def calculate_exploding_kitten_probability(self, state: GameState) -> float:
+        # Calculate the probability of drawing an Exploding Kitten
+        total_kitten_cards = state.total_cards_in_deck.EXPLODING_KITTEN
+        remaining_cards = state.cards_left
+        return total_kitten_cards / remaining_cards if remaining_cards > 0 else 0
