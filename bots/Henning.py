@@ -6,7 +6,7 @@ from card import Card, CardType
 from game_handling.game_state import GameState
 
 
-class Henning(Bot):
+class Enzo(Bot):
     def play(self, state: GameState) -> Optional[Card]:
         # Calculate the probability of drawing an Exploding Kitten
         exploding_kitten_probability = self.calculate_exploding_kitten_probability(state)
