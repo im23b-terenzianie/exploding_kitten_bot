@@ -27,12 +27,12 @@ class Henning(Bot):
 
     def handle_exploding_kitten(self, state: GameState) -> int:
         # Insert the Exploding Kitten card back into a random position in the deck
-        return random.randint(0, state.cards_left)
+        return 0
 
     def see_the_future(self, state: GameState, top_three: List[Card]):
         # Implement a strategy for SEE_THE_FUTURE card
-        if any(card.card_type == CardType.EXPLODING_KITTEN for card in top_three):
-            print("I see an Exploding Kitten!")
+        if top_three[0].card_type == CardType.EXPLODING_KITTEN:
+            print("I see an Exploding Kitten on the top!")
             skip_cards = [card for card in self.hand if card.card_type == CardType.SKIP]
             if skip_cards:
                 return skip_cards[0]
