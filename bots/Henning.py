@@ -8,17 +8,29 @@ from game_handling.game_state import GameState
 
 class Henning(Bot):
     def play(self, state: GameState) -> Optional[Card]:
-        # Prioritize SEE THE FUTURE
-        see_the_future_cards = [card for card in self.hand if card.card_type == CardType.SEE_THE_FUTURE]
-        if see_the_future_cards:
-            return see_the_future_cards[0]
+        # Get the number of alive bots
+        alive_bots = state.alive_bots
 
-        # Second priority is to play SKIP
-        skip_cards = [card for card in self.hand if card.card_type == CardType.SKIP]
-        if skip_cards:
-            return random.choice(skip_cards)
+        # Defensive strategy when more bots are alive
+        if alive_bots > 2:
+            # Prioritize SEE THE FUTURE
+            see_the_future_cards = [card for card in self.hand if card.card_type == CardType.SEE_THE_FUTURE]
+            if see_the_future_cards:
+                return see_the_future_cards[0]
 
-        # Play other cards except DEFUSE
+            # Second priority is to play SKIP
+            skip_cards = [card for card in self.hand if card.card_type == CardType.SKIP]
+            if skip_cards:
+                return random.choice(skip_cards)
+
+        # Aggressive strategy when fewer bots are alive
+        else:
+            # Play any card except DEFUSE
+            playable_cards = [card for card in self.hand if card.card_type != CardType.DEFUSE]
+            if playable_cards:
+                return random.choice(playable_cards)
+
+        # Default to playing any card except DEFUSE if no specific strategy applies
         playable_cards = [card for card in self.hand if card.card_type != CardType.DEFUSE]
         if playable_cards:
             return random.choice(playable_cards)
@@ -26,8 +38,15 @@ class Henning(Bot):
         return None
 
     def handle_exploding_kitten(self, state: GameState) -> int:
-        # Insert the Exploding Kitten card back into a random position in the deck
-        return 0
+        # Use DEFUSE card if available
+        defuse_cards = [card for card in self.hand if card.card_type == CardType.DEFUSE]
+        if defuse_cards:
+            self.hand.remove(defuse_cards[0])
+            # Place the Exploding Kitten back in a strategic position
+            return random.randint(1, state.cards_left - 1)
+
+        # If no DEFUSE card, the bot loses
+        return -1
 
     def see_the_future(self, state: GameState, top_three: List[Card]):
         # Implement a strategy for SEE_THE_FUTURE card
